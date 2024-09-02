@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01_RomanParser", "01_RomanParser", "{78E25750-4D77-4855-837C-CEAFFA3ABEDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01_RomanParser", "01_RomanParser\01_RomanParser.csproj", "{C1C5FB76-75B5-4412-8270-50651A666EA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01_RomanParser.tests", "01_RomanParser.tests\01_RomanParser.tests.csproj", "{364DD9E4-5108-4E1F-B2E0-C908A0A4A791}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C1C5FB76-75B5-4412-8270-50651A666EA7} = {78E25750-4D77-4855-837C-CEAFFA3ABEDF}
+		{364DD9E4-5108-4E1F-B2E0-C908A0A4A791} = {78E25750-4D77-4855-837C-CEAFFA3ABEDF}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1C5FB76-75B5-4412-8270-50651A666EA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C5FB76-75B5-4412-8270-50651A666EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1C5FB76-75B5-4412-8270-50651A666EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1C5FB76-75B5-4412-8270-50651A666EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{364DD9E4-5108-4E1F-B2E0-C908A0A4A791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{364DD9E4-5108-4E1F-B2E0-C908A0A4A791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{364DD9E4-5108-4E1F-B2E0-C908A0A4A791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{364DD9E4-5108-4E1F-B2E0-C908A0A4A791}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
