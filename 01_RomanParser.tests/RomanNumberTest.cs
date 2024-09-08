@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace _01_RomanParser.tests;
+﻿namespace _01_RomanParser.tests;
 
 [TestClass]
 public class RomanNumberTest
@@ -12,36 +8,21 @@ public class RomanNumberTest
     {
         var testCases = new Dictionary<string, int>()
     {
-        {"I", 1},
-        {"II", 2},
-        {"III", 3},
-        {"IV", 4},
-        {"V", 5},
-        {"VI", 6},
-        {"VII", 7},
-        {"VIII", 8},
-        {"IX", 9},
-        {"X", 10},
-        {"XL", 40},
-        {"L", 50},
-        {"XC", 90},
-        {"C", 100},
-        {"CD", 400},
-        {"D", 500},
-        {"CM", 900},
-        {"M", 1000},
-        {"MC", 1100},
-        {"MCM", 1900},
-        {"MM", 2000},
-        {"MMM", 3000},
-
-        //Not optimal
-        {"IIII", 4},  
-        {"VIIII", 9}, 
-        {"XXXX", 40}, 
-        {"LXXXX", 90},
-        {"CCCC", 400},
-        {"DCCCC", 900},
+        { "N",      0 },
+        { "I",      1 },
+        { "II",     2 },
+        { "III",    3 },
+        { "IV",     4 },
+        { "V",      5 },
+        { "VI",     6 },
+        { "VII",    7 },
+        { "VIII",   8 },
+        { "D",      500 },
+        { "CM",     900 },
+        { "M",      1000 },
+        { "MC",     1100 },
+        { "MCM",    1900 },
+        { "MM",     2000 },
     };
 
         foreach (var testCase in testCases)
@@ -80,7 +61,67 @@ public class RomanNumberTest
                     $"TestCase: '{testCase.Key}', ex.Message: '{ex.Message}'");
             }
         }
+
+
+
+
+        Dictionary<String, Object[]> exTestCases2 = new()
+        {
+            { "IM",  ['I', 'M', 0] },
+            { "XIM", ['I', 'M', 1] },
+            { "IMX", ['I', 'M', 0] },
+            { "XMD", ['X', 'M', 0] },
+            { "XID", ['I', 'D', 1] },
+            { "ID", ['I', 'D', 0] },
+            { "XM", ['X', 'M', 0] },
+
+
+        };
+        foreach (var testCase in exTestCases2)
+        {
+            var ex = Assert.ThrowsException<FormatException>(
+                () => RomanNumber.Parse(testCase.Key),
+                $"Parse '{testCase.Key}' must throw FormatException"
+            );
+            Assert.IsTrue(
+                ex.Message.Contains(
+                    $"Invalid order '{testCase.Value[0]}' before '{testCase.Value[1]}' in position {testCase.Value[2]}"
+                ),
+                "FormatException must contain data about mis-ordered symbols and its position"
+                + $"testCase: '{testCase.Key}', ex.Message: '{ex.Message}'"
+            );
+        }
+
+        Dictionary<string, (char, int)[]> exTestCases3 = new()
+        {
+          
+            { "XVV", [('V', 2)] },
+            { "LL", [('L', 1)] },
+            { "LC", [('C', 1)] },
+            { "VX", [('X', 1)] },
+            { "MM", [('M', 1)] },
+
+        };
+
+        foreach (var testCase in exTestCases3)
+        {
+            var ex = Assert.ThrowsException<FormatException>(
+                () => RomanNumber.Parse(testCase.Key),
+                $"{nameof(FormatException)} Parse '{testCase.Key}' must throw");
+
+            foreach (var (symbol, position) in testCase.Value)
+            {
+                Assert.IsTrue(ex.Message.Contains($"Invalid symbol '{symbol}' in position {position}"),
+                    $"{nameof(FormatException)} must contain data about symbol '{symbol}' at position {position}. " +
+                    $"TestCase: '{testCase.Key}', ex.Message: '{ex.Message}'");
+            }
+        }
+
     }
+
+    Dictionary<int, String> _digitValues = new Dictionary<int, String>();
+   
+
 
     [TestMethod]
     public void DigitalValueTest()
@@ -126,10 +167,6 @@ public class RomanNumberTest
             $"ArgumentException erxpected for digit = '{invalidDigit}'"
              );
 
-            // вимагатимемо від винятку повідомлення, що містить назву аргументу (digit)
-            // містить значення аргументу, що призвело до винятку
-            // назву класу та метододу, що викинуло виняток
-
             Assert.IsFalse(
                 String.IsNullOrEmpty(ex.Message),
                 "ArgumentException must have a message"
@@ -142,8 +179,35 @@ public class RomanNumberTest
                 ex.Message.Contains(nameof(RomanNumber)) &&
                 ex.Message.Contains(nameof(RomanNumber.DigitalValue)),
                 $"ArgumentException message must contain '{nameof(RomanNumber)}' and '{nameof(RomanNumber.DigitalValue)}'"
-            );
+                );
         }
     }
 
+    [TestMethod]
+    public void ToStringTest()
+    {
+        Dictionary<int, string> testCases = new Dictionary<int, string>()
+        {
+            { 1, "I" },
+            { 3343, "MMMCCCXLIII" },
+            { 4, "IV" },
+            { 44, "XLIV" },
+            { 9, "IX" },
+            { 90, "XC" },
+            { 1400, "MCD" },
+            { 900, "CM" },
+            { 990, "CMXC" },
+
+
+        };
+        
+        _digitValues.Keys.ToList().ForEach(k => testCases.Add(k, _digitValues[k]));
+        foreach (var testCase in testCases)
+        {
+            Assert.AreEqual(
+                new RomanNumber(testCase.Key).ToString(),
+                testCase.Value,
+                $"ToString({testCase.Key})--> {testCase.Value}");
+        }
+    }
 }
