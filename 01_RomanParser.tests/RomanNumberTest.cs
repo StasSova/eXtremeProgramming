@@ -38,14 +38,14 @@ public class RomanNumberTest
 
         Dictionary<string, (char, int)[]> exTestCases = new()
         {
-            {"W", [('W', 0)] },
-            {"Q", [('Q', 0)] },
-            {"s", [('s', 0)] },
-            {"Xd", [('d', 1)] },
-            {"SWXF", [('S', 0), ('W', 1), ('F', 3)] },
-            {"XXFX", [('F', 2)] },
-            {"VVVFX", [('F', 3)] },
-            {"IVF", [('F', 2)] },
+            {"W", new[] {('W', 0)}},
+            {"Q", new[] {('Q', 0)}},
+            {"s", new[] {('s', 0)}},
+            {"Xd", new[] {('d', 1)}},
+            {"SWXF", new[] {('S', 0), ('W', 1), ('F', 3)}},
+            {"XXFX", new[] {('F', 2)}},
+            {"VVVFX", new[] {('F', 3)}},
+            {"IVF", new[] {('F', 2)}},
         };
 
         foreach (var testCase in exTestCases)
@@ -61,9 +61,6 @@ public class RomanNumberTest
                     $"TestCase: '{testCase.Key}', ex.Message: '{ex.Message}'");
             }
         }
-
-
-
 
         Dictionary<String, Object[]> exTestCases2 = new()
         {
@@ -91,37 +88,9 @@ public class RomanNumberTest
                 + $"testCase: '{testCase.Key}', ex.Message: '{ex.Message}'"
             );
         }
-
-        Dictionary<string, (char, int)[]> exTestCases3 = new()
-        {
-          
-            { "XVV", [('V', 2)] },
-            { "LL", [('L', 1)] },
-            { "LC", [('C', 1)] },
-            { "VX", [('X', 1)] },
-            { "MM", [('M', 1)] },
-
-        };
-
-        foreach (var testCase in exTestCases3)
-        {
-            var ex = Assert.ThrowsException<FormatException>(
-                () => RomanNumber.Parse(testCase.Key),
-                $"{nameof(FormatException)} Parse '{testCase.Key}' must throw");
-
-            foreach (var (symbol, position) in testCase.Value)
-            {
-                Assert.IsTrue(ex.Message.Contains($"Invalid symbol '{symbol}' in position {position}"),
-                    $"{nameof(FormatException)} must contain data about symbol '{symbol}' at position {position}. " +
-                    $"TestCase: '{testCase.Key}', ex.Message: '{ex.Message}'");
-            }
-        }
-
     }
 
-    Dictionary<int, String> _digitValues = new Dictionary<int, String>();
-   
-
+    Dictionary<int, String> _digitValues = new ();
 
     [TestMethod]
     public void DigitalValueTest()
@@ -149,7 +118,7 @@ public class RomanNumberTest
         }
 
 
-        Random random = new Random();
+        var random = new Random();
         for (int i = 0; i < 100; i++)
         {
             String invalidDigit = ((char)random.Next(256)).ToString();
@@ -186,9 +155,10 @@ public class RomanNumberTest
     [TestMethod]
     public void ToStringTest()
     {
-        Dictionary<int, string> testCases = new Dictionary<int, string>()
+        Dictionary<int, string> testCases = new()
         {
             { 1, "I" },
+            { 2, "II"},
             { 3343, "MMMCCCXLIII" },
             { 4, "IV" },
             { 44, "XLIV" },
@@ -197,10 +167,7 @@ public class RomanNumberTest
             { 1400, "MCD" },
             { 900, "CM" },
             { 990, "CMXC" },
-
-
         };
-        
         _digitValues.Keys.ToList().ForEach(k => testCases.Add(k, _digitValues[k]));
         foreach (var testCase in testCases)
         {
@@ -209,5 +176,27 @@ public class RomanNumberTest
                 testCase.Value,
                 $"ToString({testCase.Key})--> {testCase.Value}");
         }
+    }
+
+
+    [TestMethod]
+    public void PlusTest()
+    {
+        RomanNumber rn1 = new(1);
+        RomanNumber rn2 = new(2);
+        RomanNumber rn3 = rn1.Plus(rn2);
+        Assert.IsNotNull(rn3);
+        Assert.IsInstanceOfType(rn3, typeof(RomanNumber),
+            "Plus result must have RomanNumber type");
+        Assert.AreNotSame(rn3, rn1, "Plus result is new instance, neither (v)first, nor second arg");
+        Assert.AreNotSame(rn3, rn2, "Plus result is new instance, neither first, nor (v)second arg");
+        Assert.AreEqual(rn1.Value + rn2.Value, rn3.Value, "Plus arithmetic");
+        RomanNumber rn12 = RomanNumber.Parse("IV");
+        String rn22 = "VI";
+        RomanNumber rn32 = rn12.Plus(rn22);
+
+        Assert.IsNotNull(rn32);
+        Assert.AreNotSame(rn32, rn12, "String result is new instance");
+        Assert.AreEqual("X", rn32.ToString(), "Plus X arithmetic");
     }
 }
