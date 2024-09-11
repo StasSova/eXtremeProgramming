@@ -29,10 +29,11 @@ public class RomanNumberTest
 
         var ex = Assert.ThrowsException<TargetInvocationException>(
         () => m1Info?.Invoke(null, ["IW"]),
-            $"_CheckSymbols 'IW' must throw FormatException"
+            "_CheckSymbols 'IW' must throw FormatException"
         );
-        Assert.IsInstanceOfType<FormatException>(
+        Assert.IsInstanceOfType(
             ex.InnerException,
+            typeof(FormatException),
             "FormatException from InnerException"
         );
     }
@@ -49,10 +50,11 @@ public class RomanNumberTest
         
         var ex = Assert.ThrowsException<TargetInvocationException>(
         () => m1Info?.Invoke(null, ["IM"]),
-            $"_CheckPairs 'IM' must throw FormatException"
+            "_CheckPairs 'IM' must throw FormatException"
         );
-        Assert.IsInstanceOfType<FormatException>(
+        Assert.IsInstanceOfType(
             ex.InnerException,
+            typeof(FormatException),
             "FormatException from InnerException"
         );
     }
@@ -69,10 +71,12 @@ public class RomanNumberTest
 
         var ex = Assert.ThrowsException<TargetInvocationException>(
         () => m1Info?.Invoke(null, ["IIX"]),
-            $"_CheckFormat 'IIX' must throw FormatException"
+            "_CheckFormat 'IIX' must throw FormatException"
         );
-        Assert.IsInstanceOfType<FormatException>(
+        
+        Assert.IsInstanceOfType(
             ex.InnerException,
+            typeof(FormatException),
             "_CheckFormat: FormatException from InnerException"
         );
     }
@@ -87,12 +91,12 @@ public class RomanNumberTest
         // Assert Not Throws
         m1Info?.Invoke(null, ["IX"]);
 
-        String[] testCases = ["IXIX", "IXX", "IVIV", "XCC", "IXIV", "XCXL", "CMCD"];
+        string[] testCases = ["IXIX", "IXX", "IVIV", "XCC", "IXIV", "XCXL", "CMCD"];
         foreach (var testCase in testCases)
         {
             var ex = Assert.ThrowsException<TargetInvocationException>(
-            () => m1Info?.Invoke(null, [testCase]),
-                $"_CheckValidity '{testCase}' must throw FormatException"
+                () => m1Info?.Invoke(null, [testCase]),
+                "_CheckValidity '{testCase}' must throw FormatException"
             );
             Assert.IsInstanceOfType<FormatException>(
                 ex.InnerException,
@@ -110,7 +114,7 @@ public class RomanNumberTest
             { "I",    1 },
             { "II",   2 },
             { "III",  3 },
-            { "IIII", 4 },   // öèì òåñòîì ìè äîçâîëÿºìî íåîïòèìàëüíó ôîðìó ÷èñëà
+            { "IIII", 4 },   
             { "IV",   4 },
             { "VI",   6 },
             { "VII",  7 },
@@ -183,12 +187,12 @@ public class RomanNumberTest
         }
 
         String[] exTestCases3 =
-        {
+        [
             "IXC", "IIX", "VIX",
             "CIIX", "IIIX", "VIIX",
-            "VIXC", "IVIX", "CVIIX",  // XIX+ CIX+ IIX- VIX-
-            "CIXC", "IXCM", "IXXC",
-        };
+            "VIXC", "IVIX", "CVIIX",
+            "CIXC", "IXCM", "IXXC"
+        ];
         foreach (var testCase in exTestCases3)
         {
             var ex = Assert.ThrowsException<FormatException>(
@@ -204,12 +208,6 @@ public class RomanNumberTest
             // );
         }
     }
-    /* Ä.Ç. Ðåàë³çóâàòè ïðîõîäæåííÿ òåñò³â íà âì³ñò ïîâ³äîìëåííÿ âèíÿòêó
-     * (îñîáëèâ³ñòü - âêëþ÷åííÿ äî íüîãî öèôðè, ÿê³é ïåðåäóþòü äâ³ ìåíø³
-     *  öèôðè).
-     * Ïðîâåñòè ðåôàêòîðèíã âæèòîãî ð³øåííÿ.
-     * Äîäàòè ùîíàéìåíøå äâà ñêð³íøîòè - äî òà ï³ñëÿ ðåôàêòîðèíãó.
-     */
 
     [TestMethod]
     public void DigitValueTest()
@@ -236,12 +234,7 @@ public class RomanNumberTest
                     () => RomanNumber.DigitValue(invalidDigit),
                     $"ArgumentException expected for digit = '{invalidDigit}'"
                 );
-            // âèìàãàòèìåìî â³ä âèíÿòêó
-            // - ïîâ³äîìëåííÿ, ùî
-            //  = íå º ïîðîæí³ì
-            //  = ì³ñòèòü íàçâó àðãóìåíòó (digit)
-            //  = ì³ñòèòü çíà÷åííÿ àðãóìåíòó, ùî ïðèçâåëî äî âèíÿòêó
-            //  = íàçâó êëàñó òà ìåòîäó, ùî âèêèíóâ âèíÿòîê
+           
             Assert.IsFalse(
                 String.IsNullOrEmpty(ex.Message),
                 "ArgumentException must have a message"
@@ -261,7 +254,7 @@ public class RomanNumberTest
     [TestMethod]
     public void ToStringTest()
     {
-        Dictionary<int, String> testCases = new() {   // Append / Concat
+        Dictionary<int, String> testCases = new() {
             { 2, "II" },
             { 3343, "MMMCCCXLIII" },
             { 4, "IV" },
@@ -269,9 +262,9 @@ public class RomanNumberTest
             { 9, "IX" },
             { 90, "XC" },
             { 1400, "MCD" },
-            { 999, "CMXCIX" },   // íåïðÿìî - çàáîðîíà IM
+            { 999, "CMXCIX" },  
             { 444, "CDXLIV" },
-            { 990, "CMXC" },   // íåïðÿìî - çàáîðîíà XM
+            { 990, "CMXC" }, 
         };
 
         _digitValues.Keys.ToList().ForEach(k => testCases.Add(_digitValues[k], k));
@@ -302,5 +295,187 @@ public class RomanNumberTest
             "Plus result is new instance, neither first, nor (v)second arg");
         Assert.AreEqual(rn1.Value + rn2.Value, rn3.Value, 
             "Plus arithmetic");
+    }
+    
+    
+    private static MethodInfo? GetMethod(string methodName)
+    {
+        Type? rnType = typeof(RomanNumber);
+        return rnType.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+    }
+    
+    [TestMethod]
+    public void CheckSymbols_ValidSymbols_DoesNotThrow()
+    {
+        // Arrange
+        var validInputs = new[]
+        {
+            "I", "V", "X", "L", "C", "D", "M", "IX", "XL", "XC", "CD", "CM"
+        };
+        MethodInfo? method = GetMethod("_CheckSymbols");
+
+        // Act & Assert
+        foreach (var input in validInputs)
+        {
+            try
+            {
+                method?.Invoke(null, [input]);
+            }
+            catch (TargetInvocationException ex)
+            {
+                Assert.Fail($"_CheckSymbols should not throw for valid input '{input}'. Exception: {ex.InnerException?.Message}");
+            }
+        }
+    }
+
+    [TestMethod]
+    public void CheckSymbols_InvalidSymbols_ThrowsFormatException()
+    {
+        // Arrange
+        var invalidInputs = new[]
+        {
+            "A", "G", "Z", "IK", "C5", "M1"
+        };
+        MethodInfo? method = GetMethod("_CheckSymbols");
+
+        // Act & Assert
+        foreach (var input in invalidInputs)
+        {
+            var ex = Assert.ThrowsException<TargetInvocationException>(() => 
+                method?.Invoke(null, [input]));
+            Assert.IsTrue(ex.InnerException is FormatException);
+            Assert.IsTrue(ex.InnerException?.Message.Contains("Invalid symbol"));
+        }
+    }
+
+    [TestMethod]
+    public void CheckPairs_ValidPairs_DoesNotThrow()
+    {
+        // Arrange
+        var validInputs = new[]
+        {
+            "IV", "IX", "XL", "XC", "CD", "CM"
+        };
+        MethodInfo? method = GetMethod("_CheckPairs");
+
+        // Act & Assert
+        foreach (var input in validInputs)
+        {
+            try
+            {
+                method?.Invoke(null, [input]);
+            }
+            catch (TargetInvocationException ex)
+            {
+                Assert.Fail($"_CheckPairs should not throw for valid input '{input}'. Exception: {ex.InnerException?.Message}");
+            }
+        }
+    }
+
+    [TestMethod]
+    public void CheckPairs_InvalidPairs_ThrowsFormatException()
+    {
+        // Arrange
+        var invalidInputs = new[]
+        {
+            "IC", "IM", "VX", "VL", "VC", "VM", "XD", "XM"
+        };
+        MethodInfo? method = GetMethod("_CheckPairs");
+
+        // Act & Assert
+        foreach (var input in invalidInputs)
+        {
+            var ex = Assert.ThrowsException<TargetInvocationException>(() => 
+                method?.Invoke(null, [input]));
+            Assert.IsTrue(ex.InnerException is FormatException);
+            Assert.IsTrue(ex.InnerException?.Message.Contains("Invalid order"));
+        }
+    }
+
+    [TestMethod]
+    public void CheckFormat_ValidFormats_DoesNotThrow()
+    {
+        // Arrange
+        var validInputs = new[]
+        {
+            "I", "IX", "XL", "XC", "CD", "CM", "MCMXC"
+        };
+        MethodInfo? method = GetMethod("_CheckFormat");
+
+        // Act & Assert
+        foreach (var input in validInputs)
+        {
+            try
+            {
+                method?.Invoke(null, [input]);
+            }
+            catch (TargetInvocationException ex)
+            {
+                Assert.Fail($"_CheckFormat should not throw for valid input '{input}'. Exception: {ex.InnerException?.Message}");
+            }
+        }
+    }
+    
+    [TestMethod]
+    public void CheckFormat_InvalidFormats_ThrowsFormatException()
+    {
+        // Arrange
+        var invalidInputs = new[]
+        {
+            "IIX", "IXIX", "IXX", "VIX", "LXL", "DCD", "MMMM"
+        };
+        MethodInfo? method = GetMethod("_CheckFormat");
+
+        // Act & Assert
+        foreach (var input in invalidInputs)
+        {
+            var ex = Assert.ThrowsException<TargetInvocationException>(() => 
+                method?.Invoke(null, new object[] { input }));
+            Assert.IsTrue(ex.InnerException is FormatException, $"Expected FormatException for input '{input}'");
+            Assert.IsTrue(ex.InnerException?.Message.Contains(input), $"Expected message to contain '{input}' for input '{input}'");
+        }
+    }
+
+    [TestMethod]
+    public void CheckSubs_ValidSubs_DoesNotThrow()
+    {
+        // Arrange
+        var validInputs = new[]
+        {
+            "IX", "XC", "CD", "MCM", "XLV"
+        };
+        MethodInfo? method = GetMethod("_CheckSubs");
+
+        // Act & Assert
+        foreach (var input in validInputs)
+        {
+            try
+            {
+                method?.Invoke(null, [input]);
+            }
+            catch (TargetInvocationException ex)
+            {
+                Assert.Fail($"_CheckSubs should not throw for valid input '{input}'. Exception: {ex.InnerException?.Message}");
+            }
+        }
+    }
+
+    [TestMethod]
+    public void CheckSubs_InvalidSubs_ThrowsFormatException()
+    {
+        // Arrange
+        var invalidInputs = new[]
+        {
+            "IXIV", "XCXL", "CDCD", "IM", "XM"
+        };
+        MethodInfo? method = GetMethod("_CheckSubs");
+
+        // Act & Assert
+        foreach (var input in invalidInputs)
+        {
+            var ex = Assert.ThrowsException<TargetInvocationException>(() => 
+                method?.Invoke(null, [input]));
+            Assert.IsTrue(ex.InnerException is FormatException, $"Expected FormatException for input '{input}'");
+        }
     }
 }

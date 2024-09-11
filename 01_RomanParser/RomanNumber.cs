@@ -3,7 +3,7 @@
 namespace _01_RomanParser;
 public record RomanNumber(int Value)
 {
-    private readonly int _value = Value;  // TODO: Refactoring - exclude
+    private readonly int _value = Value;
     public int Value { get { return _value; } init => _value = value;  }
 
     public static RomanNumber Parse(String input)
@@ -32,14 +32,17 @@ public record RomanNumber(int Value)
 
     private static void _CheckSubs(string input)
     {
-        // IXIV XCXL  -- одна цифра може відніматись тільки один раз
-        HashSet<char> subs = [];
+        HashSet<char> subs = new HashSet<char>();
+
         for (int i = 0; i < input.Length - 1; ++i)
         {
             char c = input[i];
-            if(DigitValue(c.ToString()) < DigitValue(input[i + 1].ToString()))
+            int currentDigit = DigitValue(c.ToString());
+            int nextDigit = DigitValue(input[i + 1].ToString());
+
+            if (currentDigit < nextDigit)
             {
-                if (subs.Contains(c))
+                if (subs.Contains(c) || !IsValidSubtractiveCombination(c, input[i + 1]))
                 {
                     throw new FormatException();
                 }
@@ -47,29 +50,47 @@ public record RomanNumber(int Value)
             }
         }
     }
-    /* Д.З. Створити тести для _CheckSubs
-     * Розширити тестові кейси для інших методів
-     * _CheckSymbols,_CheckPairs,_CheckFormat,_CheckSubs
-     */
+
+    private static bool IsValidSubtractiveCombination(char left, char right)
+    {
+        return (left == 'I' && (right == 'V' || right == 'X')) ||
+               (left == 'X' && (right == 'L' || right == 'C')) ||
+               (left == 'C' && (right == 'D' || right == 'M'));
+    }
 
     private static void _CheckFormat(string input)
     {
         int maxDigit = 0;
         bool wasLess = false;
         bool wasMax = false;
+    
+        Dictionary<char, int> repeatCount = new();
+
         foreach (char c in input.Reverse())
-        {   // IIX   IXIX  IXX
+        {
             int digit = DigitValue(c.ToString());
-            if (digit < maxDigit)   // if current digit is less than max
+
+            // Check repetition rule
+            if (repeatCount.ContainsKey(c))
             {
-                if (wasLess || wasMax)        // if previously was the less digit
+                repeatCount[c]++;
+                if (repeatCount[c] > 3 || (repeatCount[c] > 1 && (c == 'V' || c == 'L' || c == 'D')))
                 {
                     throw new FormatException(input);
                 }
-                // if (wasMax)
-                // {
-                //     throw new FormatException(input);
-                // }
+            }
+            else
+            {
+                repeatCount[c] = 1;
+            }
+
+            // Check format rule
+            if (digit < maxDigit)
+            {
+                if (wasLess || wasMax)
+                {
+                    throw new FormatException(input);
+                }
                 wasLess = true;
             }
             else if (digit == maxDigit)
@@ -139,24 +160,10 @@ public record RomanNumber(int Value)
     {
         return this with { Value = Value + other.Value };
     }
-    /* Д.З. Скласти тести, що перевіряють роботу методу Plus
-     * з використанням римських записів чисел, наприклад,
-     * IV + VI = X
-     */
+
 
     public override string? ToString()
     {
-        // 3343 -> MMMCCCXLIII
-        // M M M
-        // D (500) x
-        // CD (400) x
-        // C C C
-        // L x
-        // XL 
-        // X x
-        // V x
-        // IV
-        // III
         if (_value == 0) return "N";
         Dictionary<int, String> parts = new()
         {
