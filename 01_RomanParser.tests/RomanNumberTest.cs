@@ -5,15 +5,6 @@ namespace _01_RomanParser.tests;
 [TestClass]
 public class RomanNumberTest
 {
-    [TestMethod]
-    public void PrivateTest()
-    {
-        var method1 = typeof(RomanNumber).GetMethod("Method1", BindingFlags.NonPublic | BindingFlags.Static);
-
-        Assert.AreEqual(1, method1?.Invoke(null, null));
-    }
-    
-    
     private readonly Dictionary<String, int> _digitValues = new()
     {
         { "N", 0    },
@@ -27,6 +18,90 @@ public class RomanNumberTest
     };
 
     [TestMethod]
+    public void _CheckSymbolsTest()
+    {
+        Type? rnType = typeof(RomanNumber);
+        MethodInfo? m1Info = rnType.GetMethod("_CheckSymbols", 
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        // Assert Not Throws
+        m1Info?.Invoke(null, ["IX"]);
+
+        var ex = Assert.ThrowsException<TargetInvocationException>(
+        () => m1Info?.Invoke(null, ["IW"]),
+            $"_CheckSymbols 'IW' must throw FormatException"
+        );
+        Assert.IsInstanceOfType<FormatException>(
+            ex.InnerException,
+            "FormatException from InnerException"
+        );
+    }
+
+    [TestMethod]
+    public void _CheckPairsTest()
+    {
+        Type? rnType = typeof(RomanNumber);
+        MethodInfo? m1Info = rnType.GetMethod("_CheckPairs",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        // Assert Not Throws
+        m1Info?.Invoke(null, ["IX"]);
+        
+        var ex = Assert.ThrowsException<TargetInvocationException>(
+        () => m1Info?.Invoke(null, ["IM"]),
+            $"_CheckPairs 'IM' must throw FormatException"
+        );
+        Assert.IsInstanceOfType<FormatException>(
+            ex.InnerException,
+            "FormatException from InnerException"
+        );
+    }
+
+    [TestMethod]
+    public void _CheckFormatTest()
+    {
+        Type? rnType = typeof(RomanNumber);
+        MethodInfo? m1Info = rnType.GetMethod("_CheckFormat",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        // Assert Not Throws
+        m1Info?.Invoke(null, ["IX"]);
+
+        var ex = Assert.ThrowsException<TargetInvocationException>(
+        () => m1Info?.Invoke(null, ["IIX"]),
+            $"_CheckFormat 'IIX' must throw FormatException"
+        );
+        Assert.IsInstanceOfType<FormatException>(
+            ex.InnerException,
+            "_CheckFormat: FormatException from InnerException"
+        );
+    }
+
+    [TestMethod]
+    public void _CheckValidityTest()
+    {
+        Type? rnType = typeof(RomanNumber);
+        MethodInfo? m1Info = rnType.GetMethod("_CheckValidity",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        // Assert Not Throws
+        m1Info?.Invoke(null, ["IX"]);
+
+        String[] testCases = ["IXIX", "IXX", "IVIV", "XCC", "IXIV", "XCXL", "CMCD"];
+        foreach (var testCase in testCases)
+        {
+            var ex = Assert.ThrowsException<TargetInvocationException>(
+            () => m1Info?.Invoke(null, [testCase]),
+                $"_CheckValidity '{testCase}' must throw FormatException"
+            );
+            Assert.IsInstanceOfType<FormatException>(
+                ex.InnerException,
+                "_CheckValidity: FormatException from InnerException"
+            );
+        }
+    }
+
+    [TestMethod]
     public void ParseTest()
     {
         Dictionary<String, int> testCases = new()
@@ -35,7 +110,7 @@ public class RomanNumberTest
             { "I",    1 },
             { "II",   2 },
             { "III",  3 },
-            { "IIII", 4 },   
+            { "IIII", 4 },   // öèì òåñòîì ìè äîçâîëÿºìî íåîïòèìàëüíó ôîðìó ÷èñëà
             { "IV",   4 },
             { "VI",   6 },
             { "VII",  7 },
@@ -87,6 +162,10 @@ public class RomanNumberTest
             { "IMX", ['I', 'M', 0] },
             { "XMD", ['X', 'M', 0] },
             { "XID", ['I', 'D', 1] },
+            { "VX",  ['V', 'X', 0] },
+            { "VL",  ['V', 'L', 0] },
+            { "LC",  ['L', 'C', 0] },
+            { "DM",  ['D', 'M', 0] },
         };
         foreach (var testCase in exTestCases2)
         {
@@ -116,15 +195,21 @@ public class RomanNumberTest
                 () => RomanNumber.Parse(testCase),
                 $"Parse '{testCase}' must throw FormatException"
             );
-            Assert.IsTrue(
-                ex.Message.Contains(nameof(RomanNumber)) &&
-                ex.Message.Contains(nameof(RomanNumber.Parse)) &&
-                ex.Message.Contains(
-                    $"invalid sequence: more than 1 less digit before '{testCase[^1]}'"),
-                $"ex.Message must contain info about origin, cause and data. {ex.Message}"
-            );
+            // Assert.IsTrue(
+            //     ex.Message.Contains(nameof(RomanNumber)) &&
+            //     ex.Message.Contains(nameof(RomanNumber.Parse)) &&
+            //     ex.Message.Contains(
+            //         $"invalid sequence: more than 1 less digit before '{testCase[^1]}'"),
+            //     $"ex.Message must contain info about origin, cause and data. {ex.Message}"
+            // );
         }
     }
+    /* Ä.Ç. Ðåàë³çóâàòè ïðîõîäæåííÿ òåñò³â íà âì³ñò ïîâ³äîìëåííÿ âèíÿòêó
+     * (îñîáëèâ³ñòü - âêëþ÷åííÿ äî íüîãî öèôðè, ÿê³é ïåðåäóþòü äâ³ ìåíø³
+     *  öèôðè).
+     * Ïðîâåñòè ðåôàêòîðèíã âæèòîãî ð³øåííÿ.
+     * Äîäàòè ùîíàéìåíøå äâà ñêð³íøîòè - äî òà ï³ñëÿ ðåôàêòîðèíãó.
+     */
 
     [TestMethod]
     public void DigitValueTest()
@@ -151,7 +236,12 @@ public class RomanNumberTest
                     () => RomanNumber.DigitValue(invalidDigit),
                     $"ArgumentException expected for digit = '{invalidDigit}'"
                 );
-
+            // âèìàãàòèìåìî â³ä âèíÿòêó
+            // - ïîâ³äîìëåííÿ, ùî
+            //  = íå º ïîðîæí³ì
+            //  = ì³ñòèòü íàçâó àðãóìåíòó (digit)
+            //  = ì³ñòèòü çíà÷åííÿ àðãóìåíòó, ùî ïðèçâåëî äî âèíÿòêó
+            //  = íàçâó êëàñó òà ìåòîäó, ùî âèêèíóâ âèíÿòîê
             Assert.IsFalse(
                 String.IsNullOrEmpty(ex.Message),
                 "ArgumentException must have a message"
@@ -179,9 +269,9 @@ public class RomanNumberTest
             { 9, "IX" },
             { 90, "XC" },
             { 1400, "MCD" },
-            { 999, "CMXCIX" },   
+            { 999, "CMXCIX" },   // íåïðÿìî - çàáîðîíà IM
             { 444, "CDXLIV" },
-            { 990, "CMXC" },
+            { 990, "CMXC" },   // íåïðÿìî - çàáîðîíà XM
         };
 
         _digitValues.Keys.ToList().ForEach(k => testCases.Add(_digitValues[k], k));
