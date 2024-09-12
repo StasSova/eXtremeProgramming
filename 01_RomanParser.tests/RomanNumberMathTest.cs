@@ -15,10 +15,5 @@ public class RomanNumberMathTest
             6,
             RomanNumberMath.Plus(rn1,rn2,rn3).Value
         );
-
-        Assert.AreEqual(
-            3,
-            rn1.Plus(rn2).Value
-        );
     }
 }

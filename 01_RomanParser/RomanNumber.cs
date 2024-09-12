@@ -3,14 +3,6 @@
 namespace _01_RomanParser;
 public record RomanNumber(int Value)
 {
-    private readonly int _value = Value;  // TODO: Refactoring - exclude
-    public int Value { get { return _value; } init => _value = value;  }
-
-    public RomanNumber Plus(RomanNumber other)
-    {
-        return this with { Value = Value + other.Value };
-    }
-
     public override string ToString()
     {
         // 3343 -> MMMCCCXLIII
@@ -24,7 +16,7 @@ public record RomanNumber(int Value)
         // V x
         // IV
         // III
-        if (_value == 0) return "N";
+        if (Value == 0) return "N";
         Dictionary<int, String> parts = new()
         {
             { 1000, "M" },
@@ -41,7 +33,7 @@ public record RomanNumber(int Value)
             { 4, "IV" },
             { 1, "I" },
         };
-        int v = _value;
+        int v = Value;
         StringBuilder sb = new();
         foreach (var part in parts)
         {
