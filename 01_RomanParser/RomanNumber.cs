@@ -3,19 +3,11 @@
 namespace _01_RomanParser;
 public record RomanNumber(int Value)
 {
+    public RomanNumber(String input) : this(RomanNumberFactory.ParseAsInt(input))
+    {}
+    
     public override string ToString()
     {
-        // 3343 -> MMMCCCXLIII
-        // M M M
-        // D (500) x
-        // CD (400) x
-        // C C C
-        // L x
-        // XL 
-        // X x
-        // V x
-        // IV
-        // III
         if (Value == 0) return "N";
         Dictionary<int, String> parts = new()
         {
@@ -37,7 +29,7 @@ public record RomanNumber(int Value)
         StringBuilder sb = new();
         foreach (var part in parts)
         {
-            while(v >= part.Key)
+            while (v >= part.Key)
             {
                 v -= part.Key;
                 sb.Append(part.Value);
@@ -45,4 +37,10 @@ public record RomanNumber(int Value)
         }
         return sb.ToString();
     }
+    public Int32 ToInt() => Value;
+    public Int16 ToShort() => (Int16)Value;
+    public UInt16 ToUnsignedShort() => (UInt16)Value;
+    public UInt32 ToUnsignedInt() => (UInt32)Value;
+    public Single ToFloat() => (Single)Value;
+    public Double ToDouble() => (Double)Value;
 }

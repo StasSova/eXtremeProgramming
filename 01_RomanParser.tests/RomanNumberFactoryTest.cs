@@ -17,11 +17,13 @@ public class RomanNumberFactoryTest
         { "D", 500  },
         { "M", 1000 },
     });
+    
+
 
     [TestMethod]
     public void _CheckSymbolsTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
+        Type? rnType = typeof(RomanNumberFactory);
         MethodInfo? m1Info = rnType.GetMethod("_CheckSymbols", 
             BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -40,7 +42,7 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void _CheckPairsTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
+        Type? rnType = typeof(RomanNumberFactory);
         MethodInfo? m1Info = rnType.GetMethod("_CheckPairs",
             BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -60,7 +62,7 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void _CheckFormatTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
+        Type? rnType = typeof(RomanNumberFactory);
         MethodInfo? m1Info = rnType.GetMethod("_CheckFormat",
             BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -80,7 +82,7 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void _CheckValidityTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
+        Type? rnType = typeof(RomanNumberFactory);
         MethodInfo? m1Info = rnType.GetMethod("_CheckValidity",
             BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -183,15 +185,15 @@ public class RomanNumberFactoryTest
         }
 
         String[] exTestCases3 =
-        [
+        {
             "IXC", "IIX", "VIX",
             "CIIX", "IIIX", "VIIX",
             "VIXC", "IVIX", "CVIIX",  // XIX+ CIX+ IIX- VIX-
-            "CIXC", "IXCM", "IXXC"
-        ];
+            "CIXC", "IXCM", "IXXC",
+        };
         foreach (var testCase in exTestCases3)
         {
-            Assert.ThrowsException<FormatException>(
+            var ex = Assert.ThrowsException<FormatException>(
                 () => RomanNumberFactory.Parse(testCase),
                 $"Parse '{testCase}' must throw FormatException"
             );

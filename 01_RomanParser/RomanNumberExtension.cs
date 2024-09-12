@@ -2,8 +2,8 @@
 
 public static class RomanNumberExtension
 {
-    public static RomanNumber Plus(this RomanNumber rn, params RomanNumber[] others)
+    public static RomanNumber Plus(this RomanNumber romanNumber, params RomanNumber[] other)
     {
-        return RomanNumberMath.Plus([rn, ..others]);
+        return RomanNumberMath.Plus([romanNumber, .. other]);
     }
 }
