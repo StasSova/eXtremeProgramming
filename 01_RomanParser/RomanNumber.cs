@@ -11,7 +11,7 @@ public record RomanNumber(int Value)
         return this with { Value = Value + other.Value };
     }
 
-    public override string? ToString()
+    public override string ToString()
     {
         // 3343 -> MMMCCCXLIII
         // M M M
