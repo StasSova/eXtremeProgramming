@@ -24,6 +24,5 @@ public class RomanNumberExtensionTest
 
         Assert.AreNotSame(rn1, rn1.Plus(rn1));
         Assert.AreNotSame(rn1, rn1.Plus(new RomanNumber(0)));
-
     }
 }

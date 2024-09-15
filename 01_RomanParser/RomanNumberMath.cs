@@ -4,6 +4,6 @@ public static class RomanNumberMath
 {
     public static RomanNumber Plus(params RomanNumber[] args)
     {
-        return new(args.Sum(r => r.Value));
+        return new RomanNumber(args.Sum(r => r.Value));
     }
 }

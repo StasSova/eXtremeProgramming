@@ -6,31 +6,30 @@ namespace _01_RomanParser.tests;
 [TestClass]
 public class RomanNumberFactoryTest
 {
-    public static ReadOnlyDictionary<string, int> DigitValues => new(new Dictionary<String, int>
+    public static ReadOnlyDictionary<string, int> DigitValues => new(new Dictionary<string, int>
     {
-        { "N", 0    },
-        { "I", 1    },
-        { "V", 5    },
-        { "X", 10   },
-        { "L", 50   },
-        { "C", 100  },
-        { "D", 500  },
-        { "M", 1000 },
+        { "N", 0 },
+        { "I", 1 },
+        { "V", 5 },
+        { "X", 10 },
+        { "L", 50 },
+        { "C", 100 },
+        { "D", 500 },
+        { "M", 1000 }
     });
-    
 
 
     [TestMethod]
     public void _CheckSymbolsTest()
     {
-        Type? rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckSymbols", 
+        var rnType = typeof(RomanNumberFactory);
+        var m1Info = rnType.GetMethod("_CheckSymbols",
             BindingFlags.NonPublic | BindingFlags.Static);
 
         m1Info?.Invoke(null, ["IX"]);
 
         var ex = Assert.ThrowsException<TargetInvocationException>(
-        () => m1Info?.Invoke(null, ["IW"]),
+            () => m1Info?.Invoke(null, ["IW"]),
             $"_CheckSymbols 'IW' must throw FormatException"
         );
         Assert.IsInstanceOfType<FormatException>(
@@ -42,15 +41,15 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void _CheckPairsTest()
     {
-        Type? rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckPairs",
+        var rnType = typeof(RomanNumberFactory);
+        var m1Info = rnType.GetMethod("_CheckPairs",
             BindingFlags.NonPublic | BindingFlags.Static);
 
         // Assert Not Throws
         m1Info?.Invoke(null, ["IX"]);
-        
+
         var ex = Assert.ThrowsException<TargetInvocationException>(
-        () => m1Info?.Invoke(null, ["IM"]),
+            () => m1Info?.Invoke(null, ["IM"]),
             $"_CheckPairs 'IM' must throw FormatException"
         );
         Assert.IsInstanceOfType<FormatException>(
@@ -62,15 +61,15 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void _CheckFormatTest()
     {
-        Type? rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckFormat",
+        var rnType = typeof(RomanNumberFactory);
+        var m1Info = rnType.GetMethod("_CheckFormat",
             BindingFlags.NonPublic | BindingFlags.Static);
 
         // Assert Not Throws
         m1Info?.Invoke(null, ["IX"]);
 
         var ex = Assert.ThrowsException<TargetInvocationException>(
-        () => m1Info?.Invoke(null, ["IIX"]),
+            () => m1Info?.Invoke(null, ["IIX"]),
             $"_CheckFormat 'IIX' must throw FormatException"
         );
         Assert.IsInstanceOfType<FormatException>(
@@ -82,18 +81,18 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void _CheckValidityTest()
     {
-        Type? rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckValidity",
+        var rnType = typeof(RomanNumberFactory);
+        var m1Info = rnType.GetMethod("_CheckValidity",
             BindingFlags.NonPublic | BindingFlags.Static);
 
         // Assert Not Throws
         m1Info?.Invoke(null, ["IX"]);
 
-        String[] testCases = ["IXIX", "IXX", "IVIV", "XCC", "IXIV", "XCXL", "CMCD"];
+        string[] testCases = ["IXIX", "IXX", "IVIV", "XCC", "IXIV", "XCXL", "CMCD"];
         foreach (var testCase in testCases)
         {
             var ex = Assert.ThrowsException<TargetInvocationException>(
-            () => m1Info?.Invoke(null, [testCase]),
+                () => m1Info?.Invoke(null, [testCase]),
                 $"_CheckValidity '{testCase}' must throw FormatException"
             );
             Assert.IsInstanceOfType<FormatException>(
@@ -106,42 +105,43 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void ParseTest()
     {
-        Dictionary<String, int> testCases = new()
+        Dictionary<string, int> testCases = new()
         {
-            { "N",    0 },
-            { "I",    1 },
-            { "II",   2 },
-            { "III",  3 },
-            { "IIII", 4 },   // öèì òåñòîì ìè äîçâîëÿºìî íåîïòèìàëüíó ôîðìó ÷èñëà
-            { "IV",   4 },
-            { "VI",   6 },
-            { "VII",  7 },
+            { "N", 0 },
+            { "I", 1 },
+            { "II", 2 },
+            { "III", 3 },
+            { "IIII", 4 },
+            { "IV", 4 },
+            { "VI", 6 },
+            { "VII", 7 },
             { "VIII", 8 },
-            { "IX",   9 },
-            { "D",    500 },
-            { "M",    1000 },
-            { "CM",   900 },
-            { "MC",   1100 },
-            { "MCM",  1900 },
-            { "MM",   2000 },
+            { "IX", 9 },
+            { "D", 500 },
+            { "M", 1000 },
+            { "CM", 900 },
+            { "MC", 1100 },
+            { "MCM", 1900 },
+            { "MM", 2000 }
         };
         foreach (var testCase in testCases)
         {
-            RomanNumber rn = RomanNumberFactory.Parse(testCase.Key);
+            var rn = RomanNumberFactory.Parse(testCase.Key);
             Assert.IsNotNull(rn);
             Assert.AreEqual(
-                testCase.Value, 
-                rn.Value, 
+                testCase.Value,
+                rn.Value,
                 $"{testCase.Key} -> {testCase.Value}"
             );
         }
-        Dictionary<String, Object[]> exTestCases = new()
+
+        Dictionary<string, object[]> exTestCases = new()
         {
             { "W", ['W', 0] },
             { "Q", ['Q', 0] },
             { "s", ['s', 0] },
             { "sX", ['s', 0] },
-            { "Xd", ['d', 1] },
+            { "Xd", ['d', 1] }
         };
         foreach (var testCase in exTestCases)
         {
@@ -157,17 +157,18 @@ public class RomanNumberFactoryTest
                 + $"testCase: '{testCase.Key}', ex.Message: '{ex.Message}'"
             );
         }
-        Dictionary<String, Object[]> exTestCases2 = new()
+
+        Dictionary<string, object[]> exTestCases2 = new()
         {
-            { "IM",  ['I', 'M', 0] },
+            { "IM", ['I', 'M', 0] },
             { "XIM", ['I', 'M', 1] },
             { "IMX", ['I', 'M', 0] },
             { "XMD", ['X', 'M', 0] },
             { "XID", ['I', 'D', 1] },
-            { "VX",  ['V', 'X', 0] },
-            { "VL",  ['V', 'L', 0] },
-            { "LC",  ['L', 'C', 0] },
-            { "DM",  ['D', 'M', 0] },
+            { "VX", ['V', 'X', 0] },
+            { "VL", ['V', 'L', 0] },
+            { "LC", ['L', 'C', 0] },
+            { "DM", ['D', 'M', 0] }
         };
         foreach (var testCase in exTestCases2)
         {
@@ -184,13 +185,13 @@ public class RomanNumberFactoryTest
             );
         }
 
-        String[] exTestCases3 =
-        {
+        string[] exTestCases3 =
+        [
             "IXC", "IIX", "VIX",
             "CIIX", "IIIX", "VIIX",
-            "VIXC", "IVIX", "CVIIX",  // XIX+ CIX+ IIX- VIX-
-            "CIXC", "IXCM", "IXXC",
-        };
+            "VIXC", "IVIX", "CVIIX",
+            "CIXC", "IXCM", "IXXC"
+        ];
         foreach (var testCase in exTestCases3)
         {
             var ex = Assert.ThrowsException<FormatException>(
@@ -198,36 +199,56 @@ public class RomanNumberFactoryTest
                 $"Parse '{testCase}' must throw FormatException"
             );
         }
+
+        
+        Dictionary<string, object[]> exTestCases4 = new()
+        {
+            { "IXIX", ['I', 2] }, { "IXX", ['X', 1] }, { "IXIV", ['I', 2] }, { "XCXC", ['X', 2] }, { "CMM", ['M', 2] },
+            { "CMCD", ['C', 2] }, { "XCXL", ['X', 2] }, { "XCC", ['C', 1] } 
+        };
+
+        foreach (var testCase in exTestCases4)
+        {
+            var ex = Assert.ThrowsException<FormatException>(
+                () => RomanNumberFactory.Parse(testCase.Key),
+                $"Parse '{testCase.Key}' must throw FormatException"
+            );
+
+            Assert.IsTrue(
+                ex.Message.Contains($"Invalid order '{testCase.Key[(int)testCase.Value[1] - 1]}' before '{testCase.Key[(int)testCase.Value[1]]}'")
+                || ex.Message.Contains($"Invalid pattern"),
+                $"FormatException must contain data about invalid pattern or order. TestCase: '{testCase.Key}', ex.Message: '{ex.Message}'"
+            );
+        }
     }
 
     [TestMethod]
     public void DigitValueTest()
-    {           
+    {
         foreach (var testCase in DigitValues)
-        {
             Assert.AreEqual(
-                testCase.Value, 
+                testCase.Value,
                 RomanNumberFactory.DigitValue(testCase.Key),
                 $"{testCase.Key} -> {testCase.Value}"
             );
-        }
         Random random = new();
-        for (int i = 0; i < 100; ++i)
+        for (var i = 0; i < 100; ++i)
         {
-            String invalidDigit = ((char) random.Next(256)).ToString();
-            if(DigitValues.ContainsKey(invalidDigit))
+            var invalidDigit = ((char)random.Next(256)).ToString();
+            if (DigitValues.ContainsKey(invalidDigit))
             {
                 --i;
                 continue;
             }
-            ArgumentException ex =
+
+            var ex =
                 Assert.ThrowsException<ArgumentException>(
                     () => RomanNumberFactory.DigitValue(invalidDigit),
                     $"ArgumentException expected for digit = '{invalidDigit}'"
                 );
-          
+
             Assert.IsFalse(
-                String.IsNullOrEmpty(ex.Message),
+                string.IsNullOrEmpty(ex.Message),
                 "ArgumentException must have a message"
             );
             Assert.IsTrue(
@@ -241,5 +262,4 @@ public class RomanNumberFactoryTest
             );
         }
     }
-    
 }
