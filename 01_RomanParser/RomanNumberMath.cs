@@ -1,9 +1,10 @@
-﻿namespace _01_RomanParser;
-
-public static class RomanNumberMath
+﻿namespace _01_RomanParser
 {
-    public static RomanNumber Plus(params RomanNumber[] args)
+    public static class RomanNumberMath
     {
-        return new RomanNumber(args.Sum(r => r.Value));
+        public static RomanNumber Plus(params RomanNumber[] args)
+        {
+            return new(args.Sum(r => r.Value));
+        }
     }
 }

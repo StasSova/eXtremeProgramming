@@ -1,145 +1,125 @@
-﻿namespace _01_RomanParser;
-
-public class RomanNumberFactory
+﻿namespace _01_RomanParser
 {
-    public static RomanNumber Parse(string input)
+
+    public class RomanNumberFactory
     {
-        return new RomanNumber(ParseAsInt(input));
-    }
-
-    public static int ParseAsInt(string input)
-    {
-        var value = 0;
-        var rightDigit = 0;
-
-        _CheckValidity(input);
-
-        foreach (var c in input.Reverse())
+        public static RomanNumber Parse(String input)
         {
-            var digit = DigitValue(c.ToString());
-            value += digit >= rightDigit ? digit : -digit;
-            rightDigit = digit;
+            return new(ParseAsInt(input));
         }
 
-        return value;
-    }
-
-    private static void _CheckValidity(string input)
-    {
-        _CheckSymbols(input);
-        _CheckPairs(input);
-        _CheckFormat(input);
-        _CheckSubs(input);
-    }
-
-    private static void _CheckSubs(string input)
-    {
-        HashSet<char> subs = new();
-        for (var i = 0; i < input.Length - 1; ++i)
+        public static int ParseAsInt(String input)
         {
-            var c = input[i];
-            if (DigitValue(c.ToString()) < DigitValue(input[i + 1].ToString()))
-            {
-                if (subs.Contains(c)) throw new FormatException($"Invalid pattern: '{input}', repeated subtraction of '{c}'");
-                subs.Add(c);
-            }
-        }
-    }
+            int value = 0;
+            int rightDigit = 0;
 
-    private static void _CheckFormat(string input)
-    {
-        var maxDigit = 0;
-        var wasLess = false;
-        var wasMax = false;
-        var usedPairs = new HashSet<(char, char)>();
+            _CheckValidity(input);
 
-        foreach (var c in input.Reverse())
-        {
-            var digit = DigitValue(c.ToString());
-            if (digit < maxDigit)
+            foreach (char c in input.Reverse())
             {
-                if (wasLess || wasMax)
-                    throw new FormatException($"Invalid pattern: '{input}'");
-                wasLess = true;
+                int digit = DigitValue(c.ToString());
+                value += (digit >= rightDigit) ? digit : -digit;
+                rightDigit = digit;
             }
-            else if (digit == maxDigit)
-            {
-                wasMax = true;
-                wasLess = false;
-            }
-            else
-            {
-                maxDigit = digit;
-                wasLess = false;
-                wasMax = false;
-            }
+            return value;
         }
 
-        for (var i = 0; i < input.Length - 1; ++i)
+        private static void _CheckValidity(string input)
         {
-            var left = input[i];
-            var right = input[i + 1];
-            var leftDigit = DigitValue(left.ToString());
-            var rightDigit = DigitValue(right.ToString());
+            _CheckSymbols(input);
+            _CheckPairs(input);
+            _CheckFormat(input);
+            _CheckSubs(input);
+        }
 
-            if (leftDigit < rightDigit)
+        private static void _CheckSubs(string input)
+        {
+            // IXIV XCXL  -- одна цифра може відніматись тільки один раз
+
+            HashSet<char> subs = new();
+            for (int i = 0; i < input.Length - 1; ++i)
             {
-                if (!IsValidPair(left, right))
+                char c = input[i];
+                if (DigitValue(c.ToString()) < DigitValue(input[i + 1].ToString()))
                 {
-                    throw new FormatException($"Invalid order '{left}' before '{right}' in position {i}");
+                    if (subs.Contains(c))
+                    {
+                        throw new FormatException($"Invalid subtraction repetition: '{c}' in '{input}'");
+                    }
+                    subs.Add(c);
                 }
-                if (usedPairs.Contains((left, right)))
+            }
+        }
+
+
+        private static void _CheckFormat(string input)
+        {
+            int maxDigit = 0;
+            bool wasLess = false;
+            bool wasMax = false;
+            foreach (char c in input.Reverse())
+            {
+                int digit = DigitValue(c.ToString());
+                if (digit < maxDigit)
                 {
-                    throw new FormatException($"Invalid pattern: '{left}{right}' pair reused in '{input}'");
+                    if (wasLess || wasMax)
+                    {
+                        throw new FormatException($"Invalid repetition or subtraction pattern in '{input}'");
+                    }
+                    wasLess = true;
                 }
-                usedPairs.Add((left, right));
+                else if (digit == maxDigit)
+                {
+                    wasMax = true;
+                    wasLess = false;
+                }
+                else
+                {
+                    maxDigit = digit;
+                    wasLess = false;
+                    wasMax = false;
+                }
             }
         }
-    }
 
-    private static bool IsValidPair(char left, char right)
-    {
-        return (left == 'I' && (right == 'V' || right == 'X')) ||
-               (left == 'X' && (right == 'L' || right == 'C')) ||
-               (left == 'C' && (right == 'D' || right == 'M'));
-    }
-    private static void _CheckPairs(string input)
-    {
-        for (var i = 0; i < input.Length - 1; ++i)
+
+        private static void _CheckPairs(string input)
         {
-            var rightDigit = DigitValue(input[i + 1].ToString());
-            var leftDigit = DigitValue(input[i].ToString());
-            if (leftDigit != 0 &&
-                leftDigit < rightDigit &&
-                (rightDigit / leftDigit > 10 || 
-                 leftDigit == 5 || leftDigit == 50 || leftDigit == 500))
-                throw new FormatException(
-                    $"Invalid order '{input[i]}' before '{input[i + 1]}' in position {i}");
+            for (int i = 0; i < input.Length - 1; ++i)
+            {
+                int rightDigit = DigitValue(input[i + 1].ToString());
+                int leftDigit = DigitValue(input[i].ToString());
+                if (leftDigit != 0 &&
+                    leftDigit < rightDigit &&
+                    (rightDigit / leftDigit > 10 ||  // IC IM
+                        (leftDigit == 5 || leftDigit == 50 || leftDigit == 500)   // VX
+                    ))
+                {
+                    throw new FormatException(
+                        $"Invalid order '{input[i]}' before '{input[i + 1]}' in position {i}");
+                }
+            }
         }
-    }
 
-    private static void _CheckSymbols(string input)
-    {
-        var pos = 0;
-        foreach (var c in input)
+        private static void _CheckSymbols(string input)
         {
-            try
+            int pos = 0;
+            foreach (char c in input)
             {
-                DigitValue(c.ToString());
+                try
+                {
+                    DigitValue(c.ToString());
+                }
+                catch
+                {
+                    throw new FormatException(
+                        $"Invalid symbol '{c}' in position {pos}");
+                }
+                pos += 1;
             }
-            catch
-            {
-                throw new FormatException(
-                    $"Invalid symbol '{c}' in position {pos}");
-            }
-
-            pos += 1;
         }
-    }
 
-    public static int DigitValue(string digit)
-    {
-        return digit switch
+        public static int DigitValue(String digit) => digit switch
         {
             "N" => 0,
             "I" => 1,
@@ -149,8 +129,8 @@ public class RomanNumberFactory
             "C" => 100,
             "D" => 500,
             "M" => 1000,
-            _ => throw new ArgumentException(
-                $"{nameof(RomanNumberFactory)}::{nameof(DigitValue)}: 'digit' has invalid value '{digit}'")
+            _ => throw new ArgumentException($"{nameof(RomanNumberFactory)}::{nameof(DigitValue)}: 'digit' has invalid value '{digit}'")
         };
     }
+
 }
