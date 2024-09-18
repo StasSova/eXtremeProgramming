@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\01_RomanParser\01_RomanParser.csproj" />
+        <ProjectReference Include="..\01_RomanParser\01_RomanParser.csproj"/>
     </ItemGroup>
 
 </Project>

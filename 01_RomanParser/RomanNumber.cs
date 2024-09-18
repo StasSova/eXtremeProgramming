@@ -1,21 +1,19 @@
 ﻿using System.Text;
-namespace _01_RomanParser
+
+namespace _01_RomanParser;
+
+public record RomanNumber(int Value)
 {
-
-
-    public record RomanNumber(int Value)
+    public RomanNumber(string input) :
+        this(RomanNumberFactory.ParseAsInt(input))
     {
-
-        public RomanNumber(String input) :
-            this(RomanNumberFactory.ParseAsInt(input))
-            {}
+    }
 
 
-        public override string? ToString()
-        {
-            
-            if (Value == 0) return "N";
-            Dictionary<int, String> parts = new()
+    public override string? ToString()
+    {
+        if (Value == 0) return "N";
+        Dictionary<int, string> parts = new()
         {
             { 1000, "M" },
             { 900, "CM" },
@@ -29,28 +27,47 @@ namespace _01_RomanParser
             { 9, "IX" },
             { 5, "V" },
             { 4, "IV" },
-            { 1, "I" },
+            { 1, "I" }
         };
-            int v = Value;
-            StringBuilder sb = new();
-            foreach (var part in parts)
+        var v = Value;
+        StringBuilder sb = new();
+        foreach (var part in parts)
+            while (v >= part.Key)
             {
-                while (v >= part.Key)
-                {
-                    v -= part.Key;
-                    sb.Append(part.Value);
-                }
+                v -= part.Key;
+                sb.Append(part.Value);
             }
-            return sb.ToString();
-        }
 
-        public Int32 ToInt() => Value;
-        public Int16 ToShort() => (Int16)Value;
-        public UInt16 ToUnsignedShort() => (UInt16)Value;
-        public UInt32 ToUnsignedInt() => (UInt32)Value;
+        return sb.ToString();
+    }
 
-        public Single ToFloat() => (Single)Value;
-        public Double ToDouble() => (Double)Value;
+    public int ToInt()
+    {
+        return Value;
+    }
 
+    public short ToShort()
+    {
+        return (short)Value;
+    }
+
+    public ushort ToUnsignedShort()
+    {
+        return (ushort)Value;
+    }
+
+    public uint ToUnsignedInt()
+    {
+        return (uint)Value;
+    }
+
+    public float ToFloat()
+    {
+        return (float)Value;
+    }
+
+    public double ToDouble()
+    {
+        return (double)Value;
     }
 }

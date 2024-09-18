@@ -6,96 +6,62 @@ namespace _01_RomanParser.tests;
 [TestClass]
 public class RomanNumberFactoryTest
 {
-    public static ReadOnlyDictionary<string, int> DigitValues => new(new Dictionary<String, int>
+    public static ReadOnlyDictionary<string, int> DigitValues => new(new Dictionary<string, int>
     {
-        { "N", 0    },
-        { "I", 1    },
-        { "V", 5    },
-        { "X", 10   },
-        { "L", 50   },
-        { "C", 100  },
-        { "D", 500  },
-        { "M", 1000 },
+        { "N", 0 },
+        { "I", 1 },
+        { "V", 5 },
+        { "X", 10 },
+        { "L", 50 },
+        { "C", 100 },
+        { "D", 500 },
+        { "M", 1000 }
     });
-
 
 
     [TestMethod]
     public void _CheckSymbolsTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckSymbols",
-            BindingFlags.NonPublic | BindingFlags.Static);
-
-        m1Info?.Invoke(null, ["IX"]);
-
-        var ex = Assert.ThrowsException<TargetInvocationException>(
-        () => m1Info?.Invoke(null, ["IW"]),
-            $"_CheckSymbols 'IW' must throw FormatException"
-        );
-        Assert.IsInstanceOfType<FormatException>(
-            ex.InnerException,
-            "FormatException from InnerException"
-        );
+        string[] testCases = ["IW"];
+        CheckPrivateMethod("_CheckSymbols", testCases);
     }
 
     [TestMethod]
     public void _CheckPairsTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckPairs",
-            BindingFlags.NonPublic | BindingFlags.Static);
-
-        m1Info?.Invoke(null, ["IX"]);
-
-        var ex = Assert.ThrowsException<TargetInvocationException>(
-        () => m1Info?.Invoke(null, ["IM"]),
-            $"_CheckPairs 'IM' must throw FormatException"
-        );
-        Assert.IsInstanceOfType<FormatException>(
-            ex.InnerException,
-            "FormatException from InnerException"
-        );
+        string[] testCases = ["IM"];
+        CheckPrivateMethod("_CheckPairs", testCases);
     }
 
     [TestMethod]
     public void _CheckFormatTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckFormat",
-            BindingFlags.NonPublic | BindingFlags.Static);
-
-        m1Info?.Invoke(null, ["IX"]);
-
-        var ex = Assert.ThrowsException<TargetInvocationException>(
-        () => m1Info?.Invoke(null, ["IIX"]),
-            $"_CheckFormat 'IIX' must throw FormatException"
-        );
-        Assert.IsInstanceOfType<FormatException>(
-            ex.InnerException,
-            "_CheckFormat: FormatException from InnerException"
-        );
+        string[] testCases = ["IIX"];
+        CheckPrivateMethod("_CheckFormat", testCases);
     }
 
     [TestMethod]
     public void _CheckValidityTest()
     {
-        Type rnType = typeof(RomanNumberFactory);
-        MethodInfo? m1Info = rnType.GetMethod("_CheckValidity",
+        string[] testCases = ["IXIX", "IXX", "IVIV", "XCC", "IXIV", "XCXL", "CMCD"];
+        CheckPrivateMethod("_CheckValidity", testCases);
+    }
+
+    private void CheckPrivateMethod(string methodName, string[] testCases)
+    {
+        var rnType = typeof(RomanNumberFactory);
+        var m1Info = rnType.GetMethod(methodName,
             BindingFlags.NonPublic | BindingFlags.Static);
 
-        m1Info?.Invoke(null, ["IX"]);
-
-        String[] testCases = ["IXIX", "IXX", "IVIV", "XCC", "IXIV", "XCXL", "CMCD"];
         foreach (var testCase in testCases)
         {
             var ex = Assert.ThrowsException<TargetInvocationException>(
-            () => m1Info?.Invoke(null, [testCase]),
-                $"_CheckValidity '{testCase}' must throw FormatException"
+                () => m1Info?.Invoke(null, [testCase]),
+                $"{methodName} '{testCase}' must throw FormatException"
             );
             Assert.IsInstanceOfType<FormatException>(
                 ex.InnerException,
-                "_CheckValidity: FormatException from InnerException"
+                $"{methodName}: FormatException from InnerException"
             );
         }
     }
@@ -103,161 +69,207 @@ public class RomanNumberFactoryTest
     [TestMethod]
     public void ParseTest()
     {
+        var assertThrowsExceptionMethods =
+            typeof(Assert).GetMethods()
+                .Where(x => x.Name == "ThrowsException")
+                .Where(x => x.IsGenericMethod);
 
-        var assertThrowsExceptionMethods = typeof(Assert).GetMethods()
-        .Where(x => x.Name == "ThrowsException")
-        .Where(x => x.IsGenericMethod);
+        var assertThrowsExceptionFuncStringMethod =
+            assertThrowsExceptionMethods
+                .Skip(3)
+                .FirstOrDefault();
 
-        var assertThrowsExceptionFuncStringMethod = assertThrowsExceptionMethods.Skip(3).FirstOrDefault();
-
-        TestCase[] testCases1 = [
-            new() { Source = "N",    Value = 0 },
-            new() { Source = "I",    Value = 1 },
-            new() { Source = "II",   Value = 2 },
-            new() { Source = "III",  Value = 3 },
-            new() { Source = "IIII", Value = 4 },
-            new() { Source = "IV",   Value = 4 },
-            new() { Source = "VI",   Value = 6 },
-            new() { Source = "VII",  Value = 7 },
-            new() { Source = "VIII", Value = 8 },
-            new() { Source = "IX",   Value = 9 },
-            new() { Source = "D",    Value = 500 },
-            new() { Source = "M",    Value = 1000 },
-            new() { Source = "CM",   Value = 900 },
-            new() { Source = "MC",   Value = 1100 },
-            new() { Source = "MCM",  Value = 1900 },
-            new() { Source = "MM",   Value = 2000 },
-        ];
-
-        foreach (var testCase in testCases1)
-        {
-            RomanNumber rn = RomanNumberFactory.Parse(testCase.Source);
-            Assert.IsNotNull(rn);
-            Assert.AreEqual(
-                testCase.Value,
-                rn.Value,
-                $"{testCase.Source} -> {testCase.Value}"
-            );
-        }
-
+        var ex1Template = "Invalid symbol '{0}' in position {1}";
+        var exSrcTemplate = "Parse('{0}')";
+        var ex2Template = "Invalid order '{0}' before '{1}' in position {2}";
         var formatExceptionType = typeof(FormatException);
-        String partTemplate = "Invalid symbol '{0}' in position {1}";
-        TestCase[] exTestCases1 = [
-            new() { Source = "W",   ExceptionMessageParts = [String.Format(partTemplate, "W",  0)], ExceptionType = formatExceptionType},
-            new() { Source = "Q",   ExceptionMessageParts = [String.Format(partTemplate, "Q",  0)], ExceptionType = formatExceptionType},
-            new() { Source = "s",   ExceptionMessageParts = [String.Format(partTemplate, "s",  0)], ExceptionType = formatExceptionType},
-            new() { Source = "sX",  ExceptionMessageParts = [String.Format(partTemplate, "s",  0)], ExceptionType = formatExceptionType},
-            new() { Source = "Xd",  ExceptionMessageParts = [String.Format(partTemplate, "d",  1)], ExceptionType = formatExceptionType},
 
+        TestCase[] testCases =
+        [
+            new TestCase { Source = "N", Value = 0 },
+            new TestCase { Source = "I", Value = 1 },
+            new TestCase { Source = "II", Value = 2 },
+            new TestCase { Source = "III", Value = 3 },
+            new TestCase { Source = "IIII", Value = 4 },
+            new TestCase { Source = "IV", Value = 4 },
+            new TestCase { Source = "VI", Value = 6 },
+            new TestCase { Source = "VII", Value = 7 },
+            new TestCase { Source = "VIII", Value = 8 },
+            new TestCase { Source = "IX", Value = 9 },
+            new TestCase { Source = "D", Value = 500 },
+            new TestCase { Source = "M", Value = 1000 },
+            new TestCase { Source = "CM", Value = 900 },
+            new TestCase { Source = "MC", Value = 1100 },
+            new TestCase { Source = "MCM", Value = 1900 },
+            new TestCase { Source = "MM", Value = 2000 },
+
+            new TestCase
+            {
+                Source = "W",
+                ExceptionMessageParts = [string.Format(exSrcTemplate, "W"), string.Format(ex1Template, 'W', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "Q",
+                ExceptionMessageParts = [string.Format(exSrcTemplate, "Q"), string.Format(ex1Template, 'Q', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "s",
+                ExceptionMessageParts = [string.Format(exSrcTemplate, "s"), string.Format(ex1Template, 's', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "sX",
+                ExceptionMessageParts = [string.Format(exSrcTemplate, "sX"), string.Format(ex1Template, 's', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "Xd",
+                ExceptionMessageParts = [string.Format(exSrcTemplate, "Xd"), string.Format(ex1Template, 'd', 1)],
+                ExceptionType = formatExceptionType
+            },
+
+            new TestCase
+            {
+                Source = "IM", ExceptionMessageParts = [string.Format(ex2Template, 'I', 'M', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "XIM", ExceptionMessageParts = [string.Format(ex2Template, 'I', 'M', 1)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "IMX", ExceptionMessageParts = [string.Format(ex2Template, 'I', 'M', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "XMD", ExceptionMessageParts = [string.Format(ex2Template, 'X', 'M', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "XID", ExceptionMessageParts = [string.Format(ex2Template, 'I', 'D', 1)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "VX", ExceptionMessageParts = [string.Format(ex2Template, 'V', 'X', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "VL", ExceptionMessageParts = [string.Format(ex2Template, 'V', 'L', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "LC", ExceptionMessageParts = [string.Format(ex2Template, 'L', 'C', 0)],
+                ExceptionType = formatExceptionType
+            },
+            new TestCase
+            {
+                Source = "DM", ExceptionMessageParts = [string.Format(ex2Template, 'D', 'M', 0)],
+                ExceptionType = formatExceptionType
+            },
+
+            new TestCase { Source = "IXC", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "IIX", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "VIX", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "CIIX", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "IIIX", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "VIIX", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "IVIX", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "IXXC", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "IXCM", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "CVIIX", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "VIXC", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+            new TestCase { Source = "CIXC", ExceptionMessageParts = [], ExceptionType = formatExceptionType },
+
+            new TestCase
+                { Source = "IXIX", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "IXX", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "IXIV", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "XCXC", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "CMM", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "CMCD", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "XCXL", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "XCC", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType },
+            new TestCase
+                { Source = "XCCI", ExceptionMessageParts = new[] { "Invalid" }, ExceptionType = formatExceptionType }
         ];
 
-        foreach (var testCase in exTestCases1)
-        {
-
-
-            dynamic? ex = assertThrowsExceptionFuncStringMethod?
-                .MakeGenericMethod(testCase.ExceptionType!)
-                .Invoke(null,
-                [() => RomanNumberFactory.Parse(testCase.Source),
-                $"Parse '{testCase.Source}' must throw FormatException"]);
-
-            Assert.IsTrue(
-                ex!.Message.Contains(
-                    testCase.ExceptionMessageParts!.First()
-                    ),
-                $"FormatException must contain '{testCase.ExceptionMessageParts!.First()}'"
+        foreach (var testCase in testCases)
+            if (testCase.Value is not null)
+            {
+                var rn = RomanNumberFactory.Parse(testCase.Source);
+                Assert.IsNotNull(rn);
+                Assert.AreEqual(
+                    testCase.Value,
+                    rn.Value,
+                    $"{testCase.Source} -> {testCase.Value}"
                 );
-        }
+            }
+            else
+            {
+                dynamic? ex = assertThrowsExceptionFuncStringMethod?
+                    .MakeGenericMethod(testCase.ExceptionType!)
+                    .Invoke(null,
+                    [
+                        () => RomanNumberFactory.Parse(testCase.Source),
+                        $"Parse('{testCase.Source}') must throw FormatException"
+                    ]);
 
-        Dictionary<String, Object[]> exTestCases2 = new()
-        {
-            { "IM",  ['I', 'M', 0] },
-            { "XIM", ['I', 'M', 1] },
-            { "IMX", ['I', 'M', 0] },
-            { "XMD", ['X', 'M', 0] },
-            { "XID", ['I', 'D', 1] },
-            { "VX",  ['V', 'X', 0] },
-            { "VL",  ['V', 'L', 0] },
-            { "LC",  ['L', 'C', 0] },
-            { "DM",  ['D', 'M', 0] },
-        };
-        foreach (var testCase in exTestCases2)
-        {
-            var ex = Assert.ThrowsException<FormatException>(
-                () => RomanNumberFactory.Parse(testCase.Key),
-                $"Parse '{testCase.Key}' must throw FormatException"
-            );
-            Assert.IsTrue(
-                ex.Message.Contains(
-                    $"Invalid order '{testCase.Value[0]}' before '{testCase.Value[1]}' in position {testCase.Value[2]}"
-                ),
-                "FormatException must contain data about mis-ordered symbols and its position"
-                + $"testCase: '{testCase.Key}', ex.Message: '{ex.Message}'"
-            );
-        }
-
-        String[] exTestCases3 =
-        {
-            "IXC", "IIX", "VIX",
-            "CIIX", "IIIX", "VIIX",
-            "VIXC", "IVIX", "CVIIX",  
-            "CIXC", "IXCM", "IXXC",
-        };
-        foreach (var testCase in exTestCases3)
-        {
-            var throwsException = Assert.ThrowsException<FormatException>(
-                () => RomanNumberFactory.Parse(testCase),
-                $"Parse '{testCase}' must throw FormatException"
-            );
-        }
-
-
-        String[] exTestCases4 =
-        {
-            "IXIX", "IXX", "IXIV",
-            "XCXC", "CMM", "CMCD",
-            "XCXL", "XCC", "XCCI",
-        };
-
-        foreach (var testCase in exTestCases4)
-        {
-            var ex = Assert.ThrowsException<FormatException>(
-                () => RomanNumberFactory.Parse(testCase),
-                $"Parse '{testCase}' must throw FormatException"
-            );
-            Assert.IsTrue(ex.Message.Contains("Invalid"),
-                $"Exception message for '{testCase}' must contain 'Invalid'");
-        }
+                foreach (var exPart in testCase.ExceptionMessageParts ?? [])
+                    Assert.IsTrue(
+                        ex!.Message.Contains(exPart),
+                        $"Parse('{testCase.Source}') FormatException must contain '{exPart}'"
+                    );
+            }
     }
+
 
     [TestMethod]
     public void DigitValueTest()
     {
         foreach (var testCase in DigitValues)
-        {
             Assert.AreEqual(
                 testCase.Value,
                 RomanNumberFactory.DigitValue(testCase.Key),
                 $"{testCase.Key} -> {testCase.Value}"
             );
-        }
         Random random = new();
-        for (int i = 0; i < 100; ++i)
+        for (var i = 0; i < 100; ++i)
         {
-            String invalidDigit = ((char)random.Next(256)).ToString();
+            var invalidDigit = ((char)random.Next(256)).ToString();
             if (DigitValues.ContainsKey(invalidDigit))
             {
                 --i;
                 continue;
             }
-            ArgumentException ex =
+
+            var ex =
                 Assert.ThrowsException<ArgumentException>(
                     () => RomanNumberFactory.DigitValue(invalidDigit),
                     $"ArgumentException expected for digit = '{invalidDigit}'"
                 );
 
             Assert.IsFalse(
-                String.IsNullOrEmpty(ex.Message),
+                string.IsNullOrEmpty(ex.Message),
                 "ArgumentException must have a message"
             );
             Assert.IsTrue(
@@ -270,15 +282,13 @@ public class RomanNumberFactoryTest
                 $"ArgumentException message must contain '{nameof(RomanNumberFactory)}' and '{nameof(RomanNumberFactory.DigitValue)}' "
             );
         }
-
-
     }
-    class TestCase
+
+    private class TestCase
     {
-        public String Source { get; set; }
+        public string Source { get; set; }
         public int? Value { get; set; }
         public Type? ExceptionType { get; set; }
-        public IEnumerable<String>? ExceptionMessageParts { get; set; }
-
+        public IEnumerable<string>? ExceptionMessageParts { get; set; }
     }
 }
